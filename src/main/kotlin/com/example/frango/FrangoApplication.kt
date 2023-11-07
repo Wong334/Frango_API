@@ -1,4 +1,4 @@
-package com.example.Frango
+package com.example.frango
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
