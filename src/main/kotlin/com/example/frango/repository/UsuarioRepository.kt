@@ -1,16 +1,15 @@
-package com.example.Frango.Repository
+package com.example.frango.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import com.example.Frango.Entity.Usuario.kt
-import com.example.Frango.model.Usuario
+import com.example.frango.model.Usuario
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @Repository
-interface UserRepository : JpaRepository<Usuario, Long> {
+interface UsuarioRepository : JpaRepository<Usuario, Long> {
 
-    fun existsByCategoriesId(id: Long): Boolean
 
-    fun existsByNameIgnoreCase(name: String?): Boolean
-
-    fun existsByIdNotAndNameIgnoreCase(id: Long, name: String?): Boolean
+    fun findByEmail(email: String): UserDetails
 }

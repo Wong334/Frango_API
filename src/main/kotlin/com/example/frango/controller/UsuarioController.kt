@@ -1,41 +1,61 @@
-package com.example.Frango.controller
+package com.example.frango.controller
 
-import com.example.Frango.model.Usuario
-import com.example.Frango.service.UserService
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.*
+import com.example.frango.dto.UsuarioDTO
+import com.example.frango.dto.UsuarioResponseDTO
+import com.example.frango.model.Usuario
+import com.example.frango.service.UsuarioService
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 @RequestMapping("/usuarios")
-class UserController(@Autowired val userService: UserService) {
+class UsuarioController(val service: UsuarioService) {
 
-    // Rota para criar um novo usuário
-    @PostMapping
-    fun createUser(@RequestBody usuario: Usuario): Usuario {
-        return userService.save(usuario)
-    }
-
-    // Rota para listar todos os usuários
     @GetMapping
-    fun getAllUsers(): List<Usuario> {
-        return userService.getAllUsers()
+    fun listar(): List<UsuarioResponseDTO> {
+        return service.listar()
     }
 
-    // Rota para visualizar um usuário pelo ID
     @GetMapping("/{id}")
-    fun getUserById(@PathVariable id: Long): Usuario {
-        return userService.getUserById(id)
+    fun buscarPorId(@PathVariable id: Long): UsuarioResponseDTO {
+        return service.buscarPorId(id)
     }
 
-    // Rota para atualizar um usuário pelo ID
+    @PostMapping
+    @Transactional
+    fun cadastrar(@RequestBody @Valid dto: UsuarioDTO,
+                  uriBuilder: UriComponentsBuilder
+    ): ResponseEntity<Usuario> {
+        val userResponse = service.cadastrar(dto)
+        val uri = uriBuilder.path("/usuarios/${userResponse.id}")
+                .build().toUri()
+        return ResponseEntity.created(uri).body(userResponse)
+    }
+
     @PutMapping("/{id}")
-    fun updateUser(@PathVariable id: Long, @RequestBody usuario: Usuario): Usuario {
-        return userService.updateUser(id, usuario)
+    @Transactional
+    fun atualizar(@PathVariable id: Long,
+                  @RequestBody @Valid dto: UsuarioDTO
+    ): UsuarioResponseDTO {
+        return service.atualizar(id, dto)
     }
 
-    // Rota para excluir um usuário pelo ID
     @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: Long) {
-        userService.deleteUser(id)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    fun deletar(@PathVariable id: Long) {
+        service.deletar(id)
     }
 }
