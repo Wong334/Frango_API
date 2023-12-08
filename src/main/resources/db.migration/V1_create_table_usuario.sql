@@ -1,0 +1,1 @@
+INSERT INTO usuario VALUES ('Nome', '12345678901', 'exemplo@email.com', 'senha123', '(123) 456-7890');
